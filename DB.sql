@@ -10,7 +10,11 @@
 	one_time_pass varchar(60)
  );
 
- 
+ create table if not exists employees(
+	id int primary key,
+	name varchar(20)
+ );
+
 drop procedure if exists addUser;
 delimiter //
 

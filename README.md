@@ -1,145 +1,52 @@
-# Basic Authentication System
+# Support Portal
 
-A Java-based authentication project focused on implementing user registration, login, password security, and database-backed credential management.
+A Java-based backend project evolving from a basic authentication system into a support management portal. The project focuses on secure user authentication, database-backed account management, and role-based access for users, employees, and administrators.
 
-> **Status:** In Progress
+## Overview
 
-## Features
+The goal of this project is to develop a backend system that manages different types of accounts and provides access to features based on each user's role.
 
-* User registration and login
-* MySQL database integration
-* Password hashing with BCrypt
-* Authentication and credential validation
-* Environment-based database configuration
-* Docker containerization
-* Docker Compose configuration for the application and database
+- **Users:** Register, log in, and access features available to their accounts(to be decide).
+- **Employees:** Authenticate and access employee-facing functionality for handling support-related tasks.
+- **Administrators:** Manage accounts, oversee system operations, and access administrative functionality.
 
-## Technologies
-
-* **Java**
-* **MySQL**
-* **JDBC**
-* **BCrypt**
-* **Docker**
-* **Docker Compose**
-
-## Project Structure
-
-```text
-Basic-Authentication/
-├── src/              # Java source code
-├── lib/              # Project dependencies
-├── bin/              # Compiled Java classes
-├── DB.sql            # Database schema
-├── Dockerfile        # Application container configuration
-├── compose.yaml      # Application and MySQL services
-├── .env.example      # Example environment configuration
-├── .dockerignore
-├── .gitignore
-└── README.md
-```
-
-## Getting Started
-
-### Prerequisites
-
-Make sure you have:
-
-* Java
-* Docker Desktop
-* Docker Compose
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/HiandBye-1/Basic-Authentication.git
-cd Basic-Authentication
-```
-
-### 2. Configure environment variables
-
-Copy `.env.example` to `.env`:
-
-```bash
-cp .env.example .env
-```
-
-On Windows PowerShell:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-Open `.env` and enter your own MySQL credentials.
-
-**Do not commit `.env` to the repository.**
-
-### 3. Start the application
-
-Build and start the containers:
-
-```bash
-docker compose up -d --build
-```
-
-Check the running containers:
-
-```bash
-docker compose ps
-```
-
-### 4. Stop the application
-
-```bash
-docker compose down
-```
-
-To also remove the database volume:
-
-```bash
-docker compose down -v
-```
-
-> Removing the volume deletes the MySQL data stored in that Docker volume.
-
-## Database
-
-The project uses MySQL for storing authentication-related data.
-
-The database schema is provided in:
-
-```text
-DB.sql
-```
-
-Database credentials are configured through environment variables rather than being stored directly in the Java source code.
-
-## Security
-
-This project is being developed with basic authentication security practices in mind.
-
-Current security-related work includes:
-
-* BCrypt password hashing
-* Keeping database credentials outside the source code
-* Using environment variables for configuration
-* Avoiding plaintext password storage
-
-> This project is intended for learning and development purposes and should not be considered production-ready authentication software.
+The project is being developed incrementally, starting with authentication and database integration before expanding into role-based authorization and support management features.
 
 ## Current Development
 
-The project is currently **in progress**. Planned development includes improving authentication workflows, expanding validation, strengthening security practices, and adding additional testing.
+The current focus is on transitioning the existing Java and JDBC authentication implementation toward Spring Boot, Spring Data JPA, and Spring Security.
 
-## What I Am Learning
+Planned development includes:
 
-Through this project, I am practicing:
+- User registration and login
+- Secure password storage and verification using BCrypt
+- MySQL-backed account management
+- Spring Boot and JPA integration
+- Role-based authentication and authorization for users, employees, and administrators
+- Access control for protected endpoints and resources
+- Validation, error handling, and automated testing
+- Docker-based application and database deployment
 
-* Java authentication logic
-* Password hashing and verification
-* JDBC and MySQL
-* Environment-based configuration
-* Docker and Docker Compose
-* Database design
-* Debugging and testing
-* Basic application security
+## Technologies
+
+### Languages and Database
+- **Java** — Application logic and backend development
+- **SQL** — Database queries and relational data management
+- **MySQL** — Persistent storage for user accounts and application data
+
+### Backend Frameworks and Libraries
+- **Spring Boot** *(in progress)* — Backend application development and REST API creation
+- **Spring Data JPA** *(in progress)* — Entity mapping and database access through repositories
+- **Spring Security** *(in progress)* — Authentication and role-based authorization
+- **JDBC** — Database connectivity in the original authentication implementation
+- **BCrypt** — Password hashing and verification
+
+### Development and Deployment
+- **Maven** — Dependency management and project builds for the Spring Boot application
+- **Git and GitHub** — Version control and source code management
+- **Docker** — Containerization of the application and database environment
+- **Docker Compose** — Managing the application and MySQL containers together
+- **Environment Variables** — External configuration for database connection settings
+
+### Testing and Quality
+- **JUnit and Spring Boot Testing** *(for testing as development progresses)* — Testing application behavior and backend components

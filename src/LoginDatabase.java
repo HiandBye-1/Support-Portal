@@ -2,8 +2,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import HTTP.DBconnect;
-
 public class LoginDatabase{
 
     //check if the username and password match with the mysql database and return T/F
