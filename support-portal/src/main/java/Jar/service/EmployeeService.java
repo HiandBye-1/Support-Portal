@@ -1,14 +1,14 @@
 package Jar.service;
+import Jar.entities.Employee;
 import Jar.repository.EmployeeRepository;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.*;
-import Jar.Employee;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class EmployeeService {
-    private EmployeeRepository employeeRepository;
+    private final EmployeeRepository employeeRepository;
 
     public EmployeeService( EmployeeRepository empRepo){
         this.employeeRepository = empRepo;

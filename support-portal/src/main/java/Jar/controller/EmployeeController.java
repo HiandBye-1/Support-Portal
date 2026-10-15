@@ -1,15 +1,18 @@
-package Jar;
+package Jar.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import Jar.entities.Employee;
 import Jar.service.EmployeeService;
 
 @RestController
 public class EmployeeController {
-  private EmployeeService employeeService;
+  private final EmployeeService employeeService;
 
   public EmployeeController(EmployeeService employeeService) {
     this.employeeService = employeeService;
   }
+
 
 
   @GetMapping("/employee")//get employee

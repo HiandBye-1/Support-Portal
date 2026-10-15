@@ -1,4 +1,4 @@
-package Jar;
+package Jar.entities;
 
 import jakarta.persistence.*;
 
