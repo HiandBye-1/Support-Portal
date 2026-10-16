@@ -17,13 +17,12 @@ public class NormalUserService {
         this.validator = validator;
     }
 
-    public NormalUser register(String username, String password){
+    public NormalUser register(String username, String password){//for registering users
         if(!validator.usernameIsValid(username)) throw new IllegalArgumentException("Invalid username");
         if(!validator.passwordIsValid(password)) throw new IllegalArgumentException("Invalid password");
         if (ur.findByUsername(username).isPresent()){//if present mean there is a username
             throw new DuplicateUsernameException("Username already exists");
         }
-
         password = passwordEncoder.encode(password);
         NormalUser user = new NormalUser();
         user.setUsername(username);

@@ -20,8 +20,6 @@ public class NormalUser {
     private String otp;
 
 
-    public NormalUser(){}
-
     public String getUsername() {
         return username;
     }
