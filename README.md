@@ -50,3 +50,11 @@ Planned development includes:
 
 ### Testing and Quality
 - **JUnit and Spring Boot Testing** *(for testing as development progresses)* — Testing application behavior and backend components
+
+
+### Currently working
+prefix = http://localhost:8080
+
+GET  /csrf   to get your csrf key, DO THIS BEFORE ANY REQUEST and save the name + key into the postman header if you use postman
+POST /user/login  = to login
+GET  /user/register = to register your stuff to databse

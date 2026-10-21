@@ -7,6 +7,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 @Configuration
@@ -17,12 +19,16 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilter(HttpSecurity http, DaoAuthenticationProvider provider) throws Exception {//for the @post none restricted access
-        http.authorizeHttpRequests(rules -> {rules.requestMatchers(HttpMethod.POST, "/user/register").permitAll(); 
-                                             rules.requestMatchers(HttpMethod.GET, "/csrf").permitAll();
+    public SecurityFilterChain securityFilter(HttpSecurity http, 
+                                              DaoAuthenticationProvider provider,
+                                              SecurityContextRepository securityContextRepository) throws Exception {
+        http.authorizeHttpRequests(rules -> {rules.requestMatchers(HttpMethod.POST, "/user/register").permitAll(); //for the @post none restricted access
+                                             rules.requestMatchers(HttpMethod.GET, "/csrf").permitAll();//csrf code for postman
+                                             rules.requestMatchers(HttpMethod.POST, "/user/login").permitAll();//for the @post none restricted access
                                              rules.anyRequest().authenticated();
                                             });
-        return http.authenticationProvider(provider).build();
+        http.securityContext(context -> context.securityContextRepository(securityContextRepository));//use this repo for retrieving and saving
+        return http.authenticationProvider(provider).build();//build the security chain starting from DAO
     }
 
     @Bean //comparing password
@@ -35,5 +41,11 @@ public class SecurityConfig {
     @Bean //initialize the authentication manager use Dao
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception{
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+
+    @Bean
+    public SecurityContextRepository securityContextRepository(){
+        return new HttpSessionSecurityContextRepository();
     }
 }

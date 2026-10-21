@@ -11,7 +11,7 @@
  );
 
  create table if not exists employees(
-	id int primary key,
+	id int auto_increment primary key,
 	name varchar(20)
  );
 

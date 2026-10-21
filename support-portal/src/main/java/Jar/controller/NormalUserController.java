@@ -3,6 +3,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.SecurityContextRepository;
+import jakarta.servlet.http.*;
 
 import Jar.service.NormalUserService;
 import Jar.entities.NormalUser;
@@ -11,12 +16,15 @@ import Jar.dto.LoginRequest;
 public class NormalUserController {
     private final NormalUserService normalUserService;
     private final AuthenticationManager authenticationManager;
+    private final SecurityContextRepository securityContextRepository;
 
     public NormalUserController(NormalUserService normalUSerService,
-                                AuthenticationManager authenticaionManager
+                                AuthenticationManager authenticaionManager,
+                                SecurityContextRepository securityContextRepository
     ){
         this.normalUserService = normalUSerService;
         this.authenticationManager = authenticaionManager;
+        this.securityContextRepository = securityContextRepository;
     }
 
 
@@ -30,7 +38,11 @@ public class NormalUserController {
 
     @PostMapping("/user/login")
     @ResponseStatus(HttpStatus.OK)
-    public void loginUser(@RequestBody LoginRequest loginRequest){
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+    public void loginUser(@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) throws Exception{
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        securityContextRepository.saveContext(securityContext, request, response);
     }
 }
