@@ -1,10 +1,14 @@
 package Jar.service;
 import org.springframework.stereotype.Service;
 import Jar.repository.NormalUserRepository;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import Jar.entities.NormalUser;
 import Jar.InputValidator.*;
+
 import Jar.exception.DuplicateUsernameException;
+
+
 @Service
 public class NormalUserService {
     private final NormalUserRepository ur;
@@ -29,5 +33,6 @@ public class NormalUserService {
         user.setPassword(password);
         return ur.save(user);
     }
+
 
 }
