@@ -15,15 +15,17 @@
 	name varchar(20)
  );
 
-drop procedure if exists addUser;
-delimiter //
 
-create procedure addUser(p_name varchar(20), p_password varchar(60), one_time varchar(60))
-begin
-insert into users(user_name, user_password, one_time_pass) values(p_name, p_password, one_time);
-end //
- 
-delimiter ;
+ create table if not exists urlShortener(
+	short_url varchar(9) primary key,
+	long_url varchar(2048) not null,
+	user_id int not null,
+	foreign key(user_id) references users(user_id)
+ )
+
+drop procedure if exists addUser;
+
+
 
 
 select * from users;

@@ -10,6 +10,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.http.HttpMethod;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 @Configuration
 public class SecurityConfig {
@@ -28,6 +29,15 @@ public class SecurityConfig {
                                              rules.anyRequest().authenticated();
                                             });
         http.securityContext(context -> context.securityContextRepository(securityContextRepository));//use this repo for retrieving and saving
+        
+        http.logout(logout -> logout.logoutUrl("/logout")
+                                    .invalidateHttpSession(true)//invalidate the session
+                                    .clearAuthentication(true)//clear the authentication
+                                    .logoutSuccessHandler((request, response, authentication)->
+                                     response.setStatus(HttpServletResponse.SC_NO_CONTENT))//handling the logout
+                    
+                    );
+
         return http.authenticationProvider(provider).build();//build the security chain starting from DAO
     }
 
