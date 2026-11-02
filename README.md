@@ -1,60 +1,118 @@
-# Support Portal
+# Support Portal API
 
-A Java-based backend project evolving from a basic authentication system into a support management portal. The project focuses on secure user authentication, database-backed account management, and role-based access for users, employees, and administrators.
+A Java-based backend project evolving from a basic authentication system into a support management portal. The project focuses on secure authentication, database-backed account management, and role-based access control, with plans to expand into user-facing services and support-related functionality.
 
 ## Overview
 
-The goal of this project is to develop a backend system that manages different types of accounts and provides access to features based on each user's role.
+The goal is to build a backend system that manages different account types and provides functionality based on each user's role.
 
-- **Users:** Register, log in, and access features available to their accounts(to be decide).
+- **Users:** Register, log in, and access user-facing services.
 - **Employees:** Authenticate and access employee-facing functionality for handling support-related tasks.
-- **Administrators:** Manage accounts, oversee system operations, and access administrative functionality.
+- **Administrators:** Manage accounts and access administrative functionality.
 
-The project is being developed incrementally, starting with authentication and database integration before expanding into role-based authorization and support management features.
+Development is incremental, beginning with authentication and database integration before expanding into authorization, support management, and additional services.
 
 ## Current Development
 
-The current focus is on transitioning the existing Java and JDBC authentication implementation toward Spring Boot, Spring Data JPA, and Spring Security.
+The project is transitioning from a basic Java and JDBC authentication implementation toward a Spring Boot architecture using Spring Data JPA and Spring Security.
 
-Planned development includes:
+### Implemented
 
-- User registration and login
-- Secure password storage and verification using BCrypt
-- MySQL-backed account management
-- Spring Boot and JPA integration
-- Role-based authentication and authorization for users, employees, and administrators
-- Access control for protected endpoints and resources
-- Validation, error handling, and automated testing
+- User registration endpoint
+- Password hashing and verification using BCrypt
+- MySQL database integration
+- Spring Security authentication through `AuthenticationManager`
+- Session-based authentication
+- Security context persistence across requests
+- Protected user profile endpoint
+- CSRF protection
+- Logout functionality
+
+### Planned
+
+- Role-based authorization for users, employees, and administrators
+- Employee and administrator account management
+- Improved request validation and error handling
+- Automated unit and integration testing
 - Docker-based application and database deployment
+- JavaScript integration for future frontend functionality
+- Additional user-facing services, beginning with a URL shortener
+- A personal dashboard for managing shortened URLs
 
 ## Technologies
 
 ### Languages and Database
-- **Java** — Application logic and backend development
-- **SQL** — Database queries and relational data management
-- **MySQL** — Persistent storage for user accounts and application data
+
+- **Java** — Backend application logic
+- **SQL** — Relational database queries and data management
+- **MySQL** — Persistent storage for accounts and application data
+- **JavaScript** — Planned frontend integration and API interaction
 
 ### Backend Frameworks and Libraries
-- **Spring Boot** *(in progress)* — Backend application development and REST API creation
-- **Spring Data JPA** *(in progress)* — Entity mapping and database access through repositories
-- **Spring Security** *(in progress)* — Authentication and role-based authorization
+
+- **Spring Boot** — Backend application development and REST API creation
+- **Spring Data JPA** — Entity mapping and database access through repositories
+- **Spring Security** — Authentication, session management, CSRF protection, and authorization
 - **JDBC** — Database connectivity in the original authentication implementation
+- **Hibernate** — JPA implementation and ORM functionality
 - **BCrypt** — Password hashing and verification
 
 ### Development and Deployment
-- **Maven** — Dependency management and project builds for the Spring Boot application
+
+- **Maven** — Dependency management and application builds
 - **Git and GitHub** — Version control and source code management
-- **Docker** — Containerization of the application and database environment
-- **Docker Compose** — Managing the application and MySQL containers together
-- **Environment Variables** — External configuration for database connection settings
+- **Docker** — Planned containerization of the application and database
+- **Docker Compose** — Planned orchestration of the application and database containers
+- **Environment Variables** — External configuration for database connections and other settings
 
 ### Testing and Quality
-- **JUnit and Spring Boot Testing** *(for testing as development progresses)* — Testing application behavior and backend components
 
+- **JUnit** — Unit testing
+- **Spring Boot Testing** — Testing Spring application components and integration behavior
 
-### Currently working
-prefix = http://localhost:8080
+## Running and Testing the API
 
-GET  /csrf   to get your csrf key, DO THIS BEFORE ANY REQUEST and save the name + key into the postman header if you use postman
-POST /user/login  = to login
-GET  /user/register = to register your stuff to databse
+The following endpoints assume the application is running locally.
+
+**Base URL:** `http://localhost:8080`
+
+### Available Endpoints
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `GET` | `/csrf` | Retrieve the CSRF token |
+| `POST` | `/user/register` | Register a new user |
+| `POST` | `/user/login` | Authenticate a user |
+| `GET` | `/user/profile` | Retrieve the authenticated user's profile |
+| `POST` | `/logout` | Log out and invalidate the authenticated session |
+
+### Testing with Postman
+
+1. Start the Spring Boot application and confirm that it is listening on port `8080`.
+2. Send a `GET` request to `http://localhost:8080/csrf` to retrieve the CSRF token.
+3. For requests protected by CSRF, send the token using the header name provided by the `/csrf` response. Include the associated CSRF cookie when required by the configured token repository.
+4. Send a `POST` request to `/user/register` with the required registration data.
+5. Send a `POST` request to `/user/login` with the user's credentials.
+6. Preserve the session cookie returned during authentication when testing protected endpoints.
+7. Send a `GET` request to `/user/profile` to verify the authenticated session.
+8. Send a `POST` request to `/logout` to log out.
+
+**Notes:**
+
+- Registration and login use `POST`, not `GET`, because they submit data or perform an authentication action.
+- Retrieve or refresh the CSRF token as required by the application's configuration. Do not assume every request requires a new token.
+- Postman must preserve the relevant cookies and send the CSRF token in the expected header for protected state-changing requests.
+- Exact request bodies, CSRF header names, and response formats depend on the current controller and security configuration.
+
+## Project Goals
+
+This project is intended to strengthen practical backend development skills, including:
+
+- Designing REST APIs
+- Implementing secure authentication and authorization
+- Working with relational databases and JPA
+- Structuring applications with controllers, services, and repositories
+- Handling sessions, CSRF protection, and access control
+- Writing unit and integration tests
+- Deploying and configuring backend applications
+- Extending an API with additional user-facing services

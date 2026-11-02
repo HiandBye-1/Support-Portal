@@ -13,21 +13,21 @@ public class UrlMapping {
 
     @Id 
     @Column(name = "short_url")
-    private String short_url;
+    private String shortUrl;
 
     @Column(name = "long_url")
-    private String long_url;
+    private String longUrl;
 
     @ManyToOne 
     @JoinColumn(name = "user_id", nullable = false)
     private NormalUser owner;
     
     public String getShortUrl(){
-        return short_url;
+        return shortUrl;
     }
 
     public void setShortUrl(String short_url){
-        this.short_url = short_url;
+        this.shortUrl = short_url;
     }
 
     public NormalUser getOwner(){
@@ -40,10 +40,10 @@ public class UrlMapping {
 
 
     public String getLongUrl(){
-        return long_url;
+        return longUrl;
     }
 
     public void setLongUrl(String long_url){
-        this.long_url = long_url;
+        this.longUrl = long_url;
     }
 }
