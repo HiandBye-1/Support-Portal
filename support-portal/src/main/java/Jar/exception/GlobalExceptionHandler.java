@@ -26,4 +26,10 @@ public class GlobalExceptionHandler {
         return ex.getMessage();
     }
 
+    @ExceptionHandler(DuplicateShortCodeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public String handleDuplicateShortCode(DuplicateShortCodeException ex){
+        return ex.getMessage();
+    }
+
 }

@@ -5,10 +5,13 @@ import Jar.repository.UrlMappingRepository;
 import Jar.util.ShortCodeGenerator;
 import Jar.entities.UrlMapping;
 import Jar.entities.NormalUser;
+
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import Jar.repository.NormalUserRepository;
 import Jar.InputValidator.*;
-
+import org.hibernate.exception.ConstraintViolationException;
+import Jar.exception.DuplicateShortCodeException;
 
 @Service
 public class UrlShortenerService {
@@ -40,16 +43,31 @@ public class UrlShortenerService {
                                                                 new IllegalStateException("login first"));
         urlMapping.setOwner(owner);
         urlMapping.setLongUrl(longUrl);
-        urlMapping.setShortUrl(shortCodeHandler());
-        return urlMappingRepository.save(urlMapping);
+
+
+        for(int i = 0; i < 10; i++){ //try 10 times to generate a unique short code
+            urlMapping.setShortUrl(shortCodeGenerator.generateShortCode(6)); //generate a short code of 6 characters
+            try{
+                urlMappingRepository.saveAndFlush(urlMapping); //save immediately
+                return urlMapping;
+
+            }catch(DataIntegrityViolationException e){
+                if(e.getCause() instanceof ConstraintViolationException cve){
+                    if ("PRIMARY".equals(cve.getConstraintName())){//is primary
+                        if(i == 9) throw new DuplicateShortCodeException("Short code already exists");
+                    }else throw e;//if not primary 
+                }else throw e;
+            }
+
+        }
+
+
+        throw new DuplicateShortCodeException("Unable to generate a unique short code");
+
+
+        
     }
 
-    public String shortCodeHandler() {//backend check for possible collision first
-        String shortCode = shortCodeGenerator.generateShortCode(6);
-        while(urlMappingRepository.existsById(shortCode)){
-            shortCode = shortCodeGenerator.generateShortCode(6);
-        }
-        return shortCode;
-    }
+
 
 }
