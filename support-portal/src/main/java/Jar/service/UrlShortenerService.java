@@ -12,25 +12,35 @@ import Jar.repository.NormalUserRepository;
 import Jar.InputValidator.*;
 import org.hibernate.exception.ConstraintViolationException;
 import Jar.exception.DuplicateShortCodeException;
+import Jar.dto.UrlMappingResponse;
+import org.springframework.beans.factory.annotation.Value;
+
 
 @Service
 public class UrlShortenerService {
+
+    @Value("${app.base-url}")
+    private String baseUrl;
+
     private final UrlMappingRepository urlMappingRepository;
     private final ShortCodeGenerator shortCodeGenerator;
     private final NormalUserRepository normalUserRepository;
     private final InputValidator inputValidator;
+    
 
     public UrlShortenerService(UrlMappingRepository urlMappingRepository,
                                ShortCodeGenerator shortCodeGenerator,
                                NormalUserRepository normalUserRepository,
-                               InputValidator inputValidator) {
+                               InputValidator inputValidator
+                               ) {
         this.urlMappingRepository = urlMappingRepository;
         this.shortCodeGenerator = shortCodeGenerator;
         this.normalUserRepository = normalUserRepository;
         this.inputValidator = inputValidator;
+        
     }
 
-    public UrlMapping createMapping(String longUrl) {
+    public UrlMappingResponse createMapping(String longUrl) {
 
         if(!inputValidator.linkIsValid(longUrl)){
             throw new IllegalArgumentException("link is not valid");
@@ -49,7 +59,8 @@ public class UrlShortenerService {
             urlMapping.setShortUrl(shortCodeGenerator.generateShortCode(6)); //generate a short code of 6 characters
             try{
                 urlMappingRepository.saveAndFlush(urlMapping); //save immediately
-                return urlMapping;
+                
+                return new UrlMappingResponse(urlMapping.getLongUrl(), baseUrl+""+urlMapping.getShortUrl());
 
             }catch(DataIntegrityViolationException e){
                 if(e.getCause() instanceof ConstraintViolationException cve){

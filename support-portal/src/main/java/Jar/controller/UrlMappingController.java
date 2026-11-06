@@ -8,7 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import Jar.dto.CreateUrlRequest;
 import Jar.service.UrlShortenerService;
-import Jar.entities.UrlMapping;
+import Jar.dto.UrlMappingResponse;
 
 @RestController
 public class UrlMappingController {
@@ -21,7 +21,7 @@ public class UrlMappingController {
     @PostMapping("/url/shorten")
     @PreAuthorize("hasRole('NORMALUSER')")
     @ResponseStatus(HttpStatus.CREATED)
-    public UrlMapping shortenUrl(@RequestBody CreateUrlRequest request) {
+    public UrlMappingResponse shortenUrl(@RequestBody CreateUrlRequest request) {
         return urlShortenerService.createMapping(request.getLongUrl());
     }
 }

@@ -76,6 +76,12 @@ The following endpoints assume the application is running locally.
 
 **Base URL:** `http://localhost:8080`
 
+-run this file at start EmployeeApiApplicationTests.java(aka start up your server)
+
+-go to this path src/main/resources/EXapplication.properties
+ then rename EXapplication.properties to application.properties 
+ then read and input your user, password
+
 ### Available Endpoints
 
 | Method | Endpoint | Purpose |

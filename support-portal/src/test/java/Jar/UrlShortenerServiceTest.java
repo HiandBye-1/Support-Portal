@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.AfterEach;
-
+import Jar.dto.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UrlShortenerServiceTest {
@@ -68,10 +68,10 @@ public class UrlShortenerServiceTest {
         when(urlMappingRepository.saveAndFlush(any(UrlMapping.class))).thenAnswer(invocation ->invocation.getArgument(0));
 
 
-        UrlMapping urlMapping = urlShortenerService.createMapping("http://example.com");
+        UrlMappingResponse urlMapping = urlShortenerService.createMapping("http://example.com");
         assertEquals("123456", urlMapping.getShortUrl());
         assertEquals("http://example.com", urlMapping.getLongUrl());
-        assertSame(normalUser, urlMapping.getOwner());
+        assertSame("http://example.com", urlMapping.getLongUrl());
 
     } 
 
