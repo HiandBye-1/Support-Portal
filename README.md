@@ -116,6 +116,7 @@ This project is intended to strengthen practical backend development skills, inc
 
 - Designing REST APIs
 - Implementing secure authentication and authorization
+- Implementing TLS, data caching, rate limiting, load balancer, etc like a secure and scalable website should.
 - Working with relational databases and JPA
 - Structuring applications with controllers, services, and repositories
 - Handling sessions, CSRF protection, and access control
