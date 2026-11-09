@@ -14,7 +14,9 @@ import org.hibernate.exception.ConstraintViolationException;
 import Jar.exception.DuplicateShortCodeException;
 import Jar.dto.UrlMappingResponse;
 import org.springframework.beans.factory.annotation.Value;
-
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+import Jar.exception.ShortCodeNotFoundException;
 
 @Service
 public class UrlShortenerService {
@@ -76,7 +78,11 @@ public class UrlShortenerService {
         throw new DuplicateShortCodeException("Unable to generate a unique short code");
 
 
-        
+    }
+
+    public String redirect(String shortCode){
+        UrlMapping urlMapping = urlMappingRepository.findByShortUrl(shortCode).orElseThrow(() -> new ShortCodeNotFoundException("Short code not found"));
+        return urlMapping.getLongUrl();
     }
 
 

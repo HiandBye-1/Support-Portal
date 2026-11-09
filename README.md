@@ -1,124 +1,147 @@
-# Support Portal API
+# Support Portal & URL Management Platform
 
-A Java-based backend project evolving from a basic authentication system into a support management portal. The project focuses on secure authentication, database-backed account management, and role-based access control, with plans to expand into user-facing services and support-related functionality.
+A Java Spring Boot backend project designed to grow into a deployable support and URL management platform(and more to come). The project is being developed incrementally, with an emphasis on backend engineering, authentication, security, database design, and scalable architecture.
 
-## Overview
+## Project Overview
 
-The goal is to build a backend system that manages different account types and provides functionality based on each user's role.
+The platform is intended to support three main types of users:
 
-- **Users:** Register, log in, and access user-facing services.
-- **Employees:** Authenticate and access employee-facing functionality for handling support-related tasks.
-- **Administrators:** Manage accounts and access administrative functionality.
+- **Normal users:** Create and manage shortened URLs and their accounts.(More feature in plans)
+- **Employees:** Assist users and manage support requests.
+- **Administrators:** Manage users, employees, permissions, and platform activity.
 
-Development is incremental, beginning with authentication and database integration before expanding into authorization, support management, and additional services.
+The current development focus is the user authentication system and URL-shortening functionality.
 
 ## Current Development
 
-The project is transitioning from a basic Java and JDBC authentication implementation toward a Spring Boot architecture using Spring Data JPA and Spring Security.
+### Authentication & Security
 
-### Implemented
+- User registration and request validation.
+- Password hashing with BCrypt.
+- Login authentication through Spring Security's `AuthenticationManager`.
+- Session-based authentication using HTTP sessions.
+- Security context persistence through `HttpSessionSecurityContextRepository`.
+- CSRF protection.
+- Role-based authorization for protected endpoints.
+- Public registration, login, and redirect routes.
 
-- User registration endpoint
-- Password hashing and verification using BCrypt
-- MySQL database integration
-- Spring Security authentication through `AuthenticationManager`
-- Session-based authentication
-- Security context persistence across requests
-- Protected user profile endpoint
-- CSRF protection
-- Logout functionality
+### URL Shortener
 
-### Planned
+- Create shortened URLs through `POST /url/shorten`.
+- Generate unique short codes.
+- Store URL mappings in MySQL.
+- Associate each URL mapping with its owner.
+- Handle duplicate short-code collisions with retry logic.
+- Return a response DTO containing the original URL and generated short link.
+- Redirect visitors to the original URL using HTTP `302 Found`.
+- Public redirect endpoint: `GET /r/{urlCode}`.
+- Configurable short-link base URL through `app.base-url`.
 
-- Role-based authorization for users, employees, and administrators
-- Employee and administrator account management
-- Improved request validation and error handling
-- Automated unit and integration testing
-- Docker-based application and database deployment
-- JavaScript integration for future frontend functionality
-- Additional user-facing services, beginning with a URL shortener
-- A personal dashboard for managing shortened URLs
+### Current Endpoint Overview
 
-## Technologies
-
-### Languages and Database
-
-- **Java** — Backend application logic
-- **SQL** — Relational database queries and data management
-- **MySQL** — Persistent storage for accounts and application data
-- **JavaScript** — Planned frontend integration and API interaction
-
-### Backend Frameworks and Libraries
-
-- **Spring Boot** — Backend application development and REST API creation
-- **Spring Data JPA** — Entity mapping and database access through repositories
-- **Spring Security** — Authentication, session management, CSRF protection, and authorization
-- **JDBC** — Database connectivity in the original authentication implementation
-- **Hibernate** — JPA implementation and ORM functionality
-- **BCrypt** — Password hashing and verification
-
-### Development and Deployment
-
-- **Maven** — Dependency management and application builds
-- **Git and GitHub** — Version control and source code management
-- **Docker** — Planned containerization of the application and database
-- **Docker Compose** — Planned orchestration of the application and database containers
-- **Environment Variables** — External configuration for database connections and other settings
-
-### Testing and Quality
-
-- **JUnit** — Unit testing
-- **Spring Boot Testing** — Testing Spring application components and integration behavior
-
-## Running and Testing the API
-
-The following endpoints assume the application is running locally.
-
-**Base URL:** `http://localhost:8080`
-
--run this file at start EmployeeApiApplicationTests.java(aka start up your server)
-
--go to this path src/main/resources/EXapplication.properties
- then rename EXapplication.properties to application.properties 
- then read and input your user, password
-
-### Available Endpoints
-
-| Method | Endpoint | Purpose |
+| Endpoint | Access | Purpose |
 |---|---|---|
-| `GET` | `/csrf` | Retrieve the CSRF token |
-| `POST` | `/user/register` | Register a new user |
-| `POST` | `/user/login` | Authenticate a user |
-| `GET` | `/user/profile` | Retrieve the authenticated user's profile |
-| `POST` | `/logout` | Log out and invalidate the authenticated session |
+| `POST /user/register` | Public | Register an account |
+| `POST /user/login` | Public | Authenticate a user |
+| `GET /csrf` | Public | Retrieve CSRF token |
+| `GET /user/profile` | Authenticated | Retrieve user profile |
+| `POST /url/shorten` | `NORMALUSER` | Create a short URL |
+| `GET /r/{urlCode}` | Public | Redirect to original URL |
 
-### Testing with Postman
+Other endpoints may be added as development progresses.
 
-1. Start the Spring Boot application and confirm that it is listening on port `8080`.
-2. Send a `GET` request to `http://localhost:8080/csrf` to retrieve the CSRF token.
-3. For requests protected by CSRF, send the token using the header name provided by the `/csrf` response. Include the associated CSRF cookie when required by the configured token repository.
-4. Send a `POST` request to `/user/register` with the required registration data.
-5. Send a `POST` request to `/user/login` with the user's credentials.
-6. Preserve the session cookie returned during authentication when testing protected endpoints.
-7. Send a `GET` request to `/user/profile` to verify the authenticated session.
-8. Send a `POST` request to `/logout` to log out.
+## Technology Stack
 
-**Notes:**
+| Technology | Purpose |
+|---|---|
+| Java 23 | Backend programming language |
+| Spring Boot 4 | Application framework |
+| Spring Security 7 | Authentication and authorization |
+| Spring Data JPA | Database persistence |
+| Hibernate | ORM implementation |
+| MySQL 8 | Relational database |
+| Maven | Build and dependency management |
+| Postman | API testing |
+| Docker | Containerization and deployment preparation |
 
-- Registration and login use `POST`, not `GET`, because they submit data or perform an authentication action.
-- Retrieve or refresh the CSRF token as required by the application's configuration. Do not assume every request requires a new token.
-- Postman must preserve the relevant cookies and send the CSRF token in the expected header for protected state-changing requests.
-- Exact request bodies, CSRF header names, and response formats depend on the current controller and security configuration.
+## Configuration
 
-## Project Goals
+The short-link base URL is configurable:
 
-This project is intended to strengthen practical backend development skills, including:
+```properties
+app.base-url=http://localhost:8080/r/
+```
 
-- Designing REST APIs
-- Implementing secure authentication and authorization
-- Working with relational databases and JPA
-- Structuring applications with controllers, services, and repositories
-- Handling sessions, CSRF protection, and access control
-- Writing unit and integration tests
-- Deploying and configuring backend applications
-- Extending an API with additional user-facing services
+Database connection settings should be supplied through the application's configuration or environment variables. Avoid committing database credentials or other secrets.
+
+## Architecture
+
+The project currently follows a layered backend structure:
+
+- **Controller:** Handles HTTP requests and responses.
+- **Service:** Contains application and business logic.
+- **Repository:** Handles database operations.
+- **Entity:** Represents persisted database data.
+- **DTO:** Defines request and response data structures.
+- **Security:** Handles authentication, authorization, and session management.
+- **Exception:** Handles application-specific errors.
+
+The intended direction is a **modular monolith**: one deployable application organized into clearly separated functional areas, rather than prematurely splitting the system into microservices.
+
+## Planned Features
+
+### User Portal
+- URL management dashboard.
+- Custom short codes.
+- URL expiration and deactivation.
+- Click analytics.
+- QR code generation.
+- Password reset and account recovery.
+- Multi-factor authentication.
+- Account settings.
+
+### Employee / Support Portal
+- Employee account management.
+- Support ticket creation and assignment.
+- Ticket responses and history.
+- User assistance workflows.
+
+### Admin Portal
+- User and employee management.
+- Role and permission management.
+- Account suspension and recovery oversight.
+- Audit logs.
+- Platform activity and abuse monitoring.
+
+### Security & Reliability
+- Centralized exception handling.
+- Automated unit and integration testing.
+- Rate limiting.
+- Secure account recovery and MFA.
+- HTTPS/TLS deployment.
+- Improved logging and monitoring.
+
+### Scalability & Deployment
+- Docker and Docker Compose.
+- Redis for caching and shared session storage.
+- Multiple Spring Boot instances.
+- Load balancing with Nginx or an equivalent solution.
+- CI/CD pipeline.
+- Cloud deployment, custom domain, and HTTPS.
+- Database backup and recovery strategy.
+
+## Development Philosophy
+
+The goal is to build a practical backend system that can eventually support real users.
+
+New technologies will be introduced when they solve actual engineering problems. For example:
+
+- Redis when shared sessions or caching become necessary.
+- Load balancing when multiple backend instances are deployed.
+- Rate limiting when protecting public endpoints from abuse.
+- Asynchronous processing when background workloads justify it.
+
+The project will prioritize correctness, security, maintainability, and measurable performance over simply accumulating technologies.
+
+
+Thank you for your interest in the project >:)

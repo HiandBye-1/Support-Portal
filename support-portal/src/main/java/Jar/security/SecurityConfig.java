@@ -28,6 +28,7 @@ public class SecurityConfig {
                                               SecurityContextRepository securityContextRepository) throws Exception {
         http.authorizeHttpRequests(rules -> {rules.requestMatchers(HttpMethod.POST, "/user/register").permitAll(); //for the @post none restricted access
                                              rules.requestMatchers(HttpMethod.GET, "/csrf").permitAll();//csrf code for postman
+                                             rules.requestMatchers(HttpMethod.GET, "/r/**").permitAll();
                                              rules.requestMatchers(HttpMethod.POST, "/user/login").permitAll();//for the @post none restricted access
                                              rules.anyRequest().authenticated();
                                             });

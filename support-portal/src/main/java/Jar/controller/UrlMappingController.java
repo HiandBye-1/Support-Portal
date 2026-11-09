@@ -9,6 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 import Jar.dto.CreateUrlRequest;
 import Jar.service.UrlShortenerService;
 import Jar.dto.UrlMappingResponse;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.http.ResponseEntity;
+import java.net.URI;
+
 
 @RestController
 public class UrlMappingController {
@@ -23,5 +28,10 @@ public class UrlMappingController {
     @ResponseStatus(HttpStatus.CREATED)
     public UrlMappingResponse shortenUrl(@RequestBody CreateUrlRequest request) {
         return urlShortenerService.createMapping(request.getLongUrl());
+    }
+
+    @GetMapping("/r/{urlCode}")
+    public ResponseEntity<Void> redirect(@PathVariable String urlCode) {
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(urlShortenerService.redirect(urlCode))).build();
     }
 }

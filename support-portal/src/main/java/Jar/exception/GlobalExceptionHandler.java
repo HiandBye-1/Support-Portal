@@ -32,4 +32,10 @@ public class GlobalExceptionHandler {
         return ex.getMessage();
     }
 
+    @ExceptionHandler(ShortCodeNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String handleShortCodeNotFound(ShortCodeNotFoundException ex){
+        return ex.getMessage();
+    }
+
 }
