@@ -1,3 +1,4 @@
 .git
 .env
-support-portal/src/main/resources/application.properties
+src/main/resources/application.properties
+target/

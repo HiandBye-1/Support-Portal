@@ -16,4 +16,24 @@ class InputValidatorTest {//test the linkIsValid method
     void ftpLinkShouldReturnFalse() {
         assertFalse(validator.linkIsValid("ftp://example.com"));
     }
+
+    @Test 
+    void noDomainLinkShouldReturnFalse() {
+        assertFalse(validator.linkIsValid("https://"));
+    }
+
+    @Test
+    void validHttpLinkShouldReturnTrue() {
+        assertTrue(validator.linkIsValid("http://example.com"));
+    }
+
+    @Test 
+    void scriptLinkShouldReturnFalse() {
+        assertFalse(validator.linkIsValid("javascript:alert(1)"));
+    }
+
+    @Test 
+    void nullLinkShouldReturnFalse() {
+        assertFalse(validator.linkIsValid(null));
+    }
 }

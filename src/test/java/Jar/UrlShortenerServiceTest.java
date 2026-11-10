@@ -21,15 +21,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.test.context.event.annotation.AfterTestClass;
 
 import java.util.Collections;
 import Jar.entities.UrlMapping;
 import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.AfterEach;
 import Jar.dto.*;
 
@@ -71,7 +70,6 @@ public class UrlShortenerServiceTest {
         UrlMappingResponse urlMapping = urlShortenerService.createMapping("http://example.com");
         assertEquals("123456", urlMapping.getShortUrl());
         assertEquals("http://example.com", urlMapping.getLongUrl());
-        assertSame("http://example.com", urlMapping.getLongUrl());
 
     } 
 
@@ -82,6 +80,21 @@ public class UrlShortenerServiceTest {
         when(inputValidator.linkIsValid("awd")).thenReturn(false);
         assertThrows(IllegalArgumentException.class, () -> urlShortenerService.createMapping("awd"));
         verify(shortCodeGenerator, never()).generateShortCode(6);
+    }
+
+    @Test
+    void returnUrl() {
+        UrlMapping urlMapping = new UrlMapping();
+
+        urlMapping.setShortUrl("123456");
+        urlMapping.setLongUrl("https://example.com");
+
+        when(urlMappingRepository.findByShortUrl("123456"))
+                .thenReturn(Optional.of(urlMapping));
+
+        String result = urlShortenerService.redirect("123456");
+
+        assertEquals("https://example.com", result);
     }
 
     @AfterEach

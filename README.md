@@ -146,6 +146,5 @@ The project will prioritize correctness, security, maintainability, and measurab
 
 
 Thank you for your interest in the project >:)
-=======
 
->>>>>>> origin/master
+
