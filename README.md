@@ -102,7 +102,6 @@ git clone https://github.com/HiandBye-1/Support-Portal.git
 cd support-portal
 ```
 
-Replace `<repository-url>` with the repository's actual Git URL.
 
 ### 2. Configure environment variables
 
