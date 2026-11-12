@@ -1,18 +1,17 @@
-FROM  eclipse-temurin:21-jdk AS build
+FROM maven:3.9-eclipse-temurin-23 AS build
 
-WORKDIR /Personal
+WORKDIR /app
 
 COPY . .
 
-RUN javac -cp "lib/*"  src/*.java 
+RUN mvn clean package
 
 
 
-FROM  eclipse-temurin:21-jdk
-COPY --from=build /Personal /Personal
+FROM  eclipse-temurin:23-jre
+COPY --from=build /app/target/*.jar /app/app.jar
 
-not working at the moment
+WORKDIR /app
 
-
-ENTRYPOINT ["java", "-cp", "src:lib/*", "MainMenu"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
 

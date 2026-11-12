@@ -1,9 +1,6 @@
 
  use Ldata;
 
-DROP TABLE IF EXISTS url_shortener;
-DROP TABLE IF EXISTS users;
-drop table if exists employees;
 
  create table if not exists users(
 	user_name varchar(20),
@@ -25,9 +22,5 @@ drop table if exists employees;
 	foreign key(user_id) references users(user_id)
  );
 
-drop procedure if exists addUser;
 
 
-
-
-select * from users;

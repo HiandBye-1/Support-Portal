@@ -18,9 +18,11 @@ import Jar.entities.NormalUser;
 import java.util.Optional;
 
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
 import Jar.entities.UrlMapping;
@@ -44,12 +46,16 @@ public class UrlShortenerServiceTest {
     @Mock private InputValidator inputValidator;
 
     @Mock private UrlMappingRepository urlMappingRepository;
+
+    @Value("${app.base-url}")
+    private String baseUrl;
     
 
     @Test 
     void createMappingTest() {
-
+        String baseUrl = "https://localhost:8443/r/";
         NormalUser normalUser = new NormalUser();
+        
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_NORMALUSER");//add role
         User principal = new User("username", "password", Collections.singletonList(authority));
         UsernamePasswordAuthenticationToken authentication = 
@@ -66,9 +72,11 @@ public class UrlShortenerServiceTest {
         //invocation use save and flush method's argument, any = accept any argument as long as it's this class
         when(urlMappingRepository.saveAndFlush(any(UrlMapping.class))).thenAnswer(invocation ->invocation.getArgument(0));
 
-
+        ReflectionTestUtils.setField(urlShortenerService, "baseUrl", baseUrl);
         UrlMappingResponse urlMapping = urlShortenerService.createMapping("http://example.com");
-        assertEquals("123456", urlMapping.getShortUrl());
+
+
+        assertEquals("https://localhost:8443/r/123456", urlMapping.getShortUrl());
         assertEquals("http://example.com", urlMapping.getLongUrl());
 
     } 

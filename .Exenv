@@ -1,0 +1,4 @@
+DB_USERNAME=[your database username]
+DB_PASSWORD=[your database password]
+KEYSTORE_PASSWORD=[your password when you created the tls keys]
+DB_ROOT_PASSWORD=[any password you want]

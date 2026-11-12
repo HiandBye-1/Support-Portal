@@ -14,8 +14,6 @@ import org.hibernate.exception.ConstraintViolationException;
 import Jar.exception.DuplicateShortCodeException;
 import Jar.dto.UrlMappingResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
 import Jar.exception.ShortCodeNotFoundException;
 
 @Service

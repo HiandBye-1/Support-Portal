@@ -1,26 +1,34 @@
 services:
-    mysql:
-        image: mysql
+    database:
+        image: mysql:8.0
         environment:
-            MYSQL_ROOT_PASSWORD: admin123
+            MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
             MYSQL_DATABASE: Ldata
+            MYSQL_USER: ${DB_USERNAME}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
         volumes:
-            - "./DB.sql:/docker-entrypoint-initdb.d/DB.sql"
+            - "./DB.sql:/docker-entrypoint-initdb.d/DB.sql:ro"
+            - "database-data:/var/lib/mysql"
         networks:
             - mynetwork
-    myapp:
-        image: personal
+    app:
+        build: .
         environment:
-            DB_HOST: mysql
-            DB_PASSWORD: admin123
-            DB_USER: root
+            DB_PASSWORD: ${DB_PASSWORD}
+            DB_USERNAME: ${DB_USERNAME}
+            KEYSTORE_PASSWORD: ${KEYSTORE_PASSWORD}
         networks:
             - mynetwork
-        container_name: myapp
-        stdin_open: true
-        tty: true
+        container_name: app
         depends_on: 
-            - mysql
+            - database
+        ports:
+            - "8443:8443"
+        volumes:
+            - "./certs:/app/certs:ro"
 
 networks:
     mynetwork:
+volumes:
+    database-data:
+
