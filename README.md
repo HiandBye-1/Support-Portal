@@ -1,18 +1,24 @@
-# Support Portal & URL Management Platform
+# LinkFlow — Link Management, Analytics & Support Platform
 
-A Java Spring Boot backend project designed to grow into a deployable support and URL management platform. The project is being developed incrementally, with an emphasis on backend engineering, authentication, security, database design, containerization, and scalable architecture.
+LinkFlow is a Java Spring Boot project evolving into a deployable, developer-oriented link infrastructure and analytics platform.
 
-The long-term goal is to build a practical platform that can support real users, employees, and administrators.
+The platform combines URL management, analytics, and developer APIs with dedicated user, employee, and administrator workflows.
+
+Development is incremental, with an emphasis on backend engineering, authentication, security, database design, concurrency, containerization, and scalable architecture.
+
+The long-term goal is to build a practical platform that can support real users and provide services that other applications can integrate with.
 
 ## Project Overview
 
-The platform is intended to support three main types of users:
+The platform supports three main types of users:
 
-- **Normal users:** Create and manage shortened URLs and their accounts.
-- **Employees:** Assist users and manage support requests.
-- **Administrators:** Manage users, employees, permissions, and platform activity.
+- **Normal users:** Create and manage shortened URLs, organize links, and view analytics.
+- **Employees:** Assist users, manage support requests, and investigate reported or suspicious links.
+- **Administrators:** Manage users, employees, permissions, and overall platform activity.
 
-The current development focus is authentication, session management, security, URL shortening, and Docker-based development.
+The platform will also provide developer-facing APIs for integrating link management and analytics into external applications.
+
+The current foundation includes authentication, session management, security, URL shortening, and Docker-based development.
 
 ## Current Development
 
@@ -65,7 +71,7 @@ The current development focus is authentication, session management, security, U
 
 **Note:** CSRF protection is enabled, including for public POST requests. Clients must obtain and submit a valid CSRF token.
 
-Other endpoints may be added as development progresses.
+This table reflects the currently implemented endpoints. Additional endpoints will be documented as development progresses.
 
 ## Technology Stack
 
@@ -82,6 +88,7 @@ Other endpoints may be added as development progresses.
 | Docker Compose | Multi-container orchestration |
 | Postman | API testing |
 | TLS / HTTPS | Encrypted application communication |
+| JavaScript (planned) | Browser-side API integration and user interfaces |
 
 ## Getting Started
 
@@ -99,15 +106,16 @@ You do not need to install Java, Maven, or MySQL separately to run the Dockerize
 
 ```bash
 git clone https://github.com/HiandBye-1/Support-Portal.git
-cd support-portal
+cd Support-Portal
 ```
-
 
 ### 2. Configure environment variables
 
 Create a `.env` file in the project root, alongside `compose.yaml` and `Dockerfile`.
 
-Use the following as a starting point:
+If the repository contains an `.env.example` file, copy it and use it as your starting point.
+
+For example:
 
 ```dotenv
 DB_USERNAME=appuser
@@ -150,6 +158,8 @@ keytool -genkeypair ^
   -dname "CN=localhost" ^
   -ext "SAN=dns:localhost,ip:127.0.0.1"
 ```
+
+This command uses Windows Command Prompt (`cmd`) line-continuation syntax. In PowerShell or another terminal, adjust the line continuations accordingly.
 
 Enter the same password configured in `KEYSTORE_PASSWORD` when prompted.
 
@@ -277,7 +287,7 @@ docker compose down -v
 
 This deletes the named database volume and all data stored in it. On the next startup, MySQL initializes a fresh database and executes `DB.sql` again.
 
-Only use this command when you are comfortable losing the existing database data.
+**Warning:** Only use this command when you are comfortable losing the existing database data.
 
 ## Configuration
 
@@ -304,7 +314,6 @@ server.servlet.session.cookie.same-site=lax
 
 The database hostname `database` refers to the MySQL service name inside the Docker Compose network. It is not `localhost` from the application's container.
 
-Change the .Exenv to .env and follow instruction in the new .env files
 The `.env` file is read by Docker Compose for variable substitution. Compose then passes the required variables into the application container.
 
 ## Architecture
@@ -324,12 +333,15 @@ The intended direction is a **modular monolith**: one deployable application org
 
 ## Planned Features
 
+The following features are part of the long-term roadmap and are not all implemented yet.
+
 ### User Portal
 
 - URL management dashboard.
 - Custom short codes.
 - URL expiration and deactivation.
-- Click analytics.
+- Click tracking and analytics.
+- Campaign creation and link organization.
 - QR code generation.
 - Password reset and account recovery.
 - Multi-factor authentication.
@@ -341,6 +353,7 @@ The intended direction is a **modular monolith**: one deployable application org
 - Support ticket creation and assignment.
 - Ticket responses and history.
 - User assistance workflows.
+- Reported-link review and abuse investigation.
 
 ### Admin Portal
 
@@ -349,6 +362,31 @@ The intended direction is a **modular monolith**: one deployable application org
 - Account suspension and recovery oversight.
 - Audit logs.
 - Platform activity and abuse monitoring.
+- Review of reported or suspicious links.
+
+### Developer Platform
+
+- API-based link creation and management.
+- API key creation, revocation, and permissions.
+- Usage tracking and rate limiting.
+- Analytics endpoints for application integrations.
+- Webhooks for selected link events.
+
+### Analytics & Background Processing
+
+- Click-event collection.
+- Asynchronous click-event processing.
+- Background analytics aggregation.
+- Link and campaign performance statistics.
+- Reporting and data export.
+
+### Frontend Integration
+
+- JavaScript-based browser interfaces integrated with Spring Boot REST APIs.
+- Incremental frontend development alongside backend features.
+- API requests using `fetch()`.
+- JSON response handling and form validation.
+- Session-cookie and CSRF-token integration.
 
 ### Security & Reliability
 
@@ -358,10 +396,11 @@ The intended direction is a **modular monolith**: one deployable application org
 - Secure account recovery and MFA.
 - Production HTTPS/TLS configuration.
 - Improved logging and monitoring.
+- URL abuse prevention and suspicious-link reporting.
 
 ### Scalability & Deployment
 
-- Redis for caching and shared session storage.
+- Redis for caching and shared session storage when justified.
 - Multiple Spring Boot instances.
 - Load balancing with Nginx or an equivalent solution.
 - CI/CD pipeline.
@@ -370,7 +409,7 @@ The intended direction is a **modular monolith**: one deployable application org
 
 ## Development Philosophy
 
-The goal is to build a practical backend system that can eventually support real users.
+The goal is to build a practical backend system that can eventually support real users and external application integrations.
 
 New technologies will be introduced when they solve actual engineering problems.
 
@@ -379,10 +418,12 @@ For example:
 - Redis when shared sessions or caching become necessary.
 - Load balancing when multiple backend instances are deployed.
 - Rate limiting when protecting public endpoints from abuse.
-- Asynchronous processing when background workloads justify it.
+- Asynchronous processing when background workloads justify it, beginning with click-event processing and analytics.
 
-The project will prioritize correctness, security, maintainability, and measurable performance over simply accumulating technologies.
+Backend functionality will remain the primary development focus, while JavaScript interfaces will be introduced incrementally as corresponding APIs become stable.
+
+The project will prioritize correctness, security, maintainability, testing, and measurable performance over simply accumulating technologies.
 
 ---
 
-**Thank you for your interest in the project!** >:)
+**Thank you for your interest in LinkFlow! >:)**

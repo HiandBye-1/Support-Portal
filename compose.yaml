@@ -11,9 +11,12 @@ services:
             - "database-data:/var/lib/mysql"
         networks:
             - mynetwork
+        ports:
+            - "3307:3306"
     app:
         build: .
         environment:
+            SERVER_SSL_KEY_STORE: file:/app/certs/localhost.p12
             DB_PASSWORD: ${DB_PASSWORD}
             DB_USERNAME: ${DB_USERNAME}
             KEYSTORE_PASSWORD: ${KEYSTORE_PASSWORD}
