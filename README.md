@@ -1,106 +1,40 @@
-# LinkFlow — Link Management, Analytics & Support Platform
+# LinkFlow — Link Management & Analytics Platform
 
-LinkFlow is a Java Spring Boot project evolving into a deployable, developer-oriented link infrastructure and analytics platform.
+LinkFlow is a Java Spring Boot application for creating, managing, and tracking shortened URLs. It is being developed as a secure, deployable platform with user, employee, administrator, and developer-facing functionality.
 
-The platform combines URL management, analytics, and developer APIs with dedicated user, employee, and administrator workflows.
+## Current Features
 
-Development is incremental, with an emphasis on backend engineering, authentication, security, database design, concurrency, containerization, and scalable architecture.
+- **Authentication:** User registration, BCrypt password hashing, Spring Security authentication, session management, and CSRF protection.
+- **Authorization:** Role-based access control for protected endpoints.
+- **URL Shortening:** Generate unique short codes, associate links with their owners, store mappings in MySQL, and redirect visitors.
+- **HTTPS:** TLS support for local development.
+- **Docker:** Multi-stage application image, Docker Compose, MySQL container, and persistent database storage.
 
-The long-term goal is to build a practical platform that can support real users and provide services that other applications can integrate with.
-
-## Project Overview
-
-The platform supports three main types of users:
-
-- **Normal users:** Create and manage shortened URLs, organize links, and view analytics.
-- **Employees:** Assist users, manage support requests, and investigate reported or suspicious links.
-- **Administrators:** Manage users, employees, permissions, and overall platform activity.
-
-The platform will also provide developer-facing APIs for integrating link management and analytics into external applications.
-
-The current foundation includes authentication, session management, security, URL shortening, and Docker-based development.
-
-## Current Development
-
-### Authentication & Security
-
-- User registration and request validation.
-- Password hashing with BCrypt.
-- Login authentication through Spring Security's `AuthenticationManager`.
-- Session-based authentication using HTTP sessions.
-- Security context persistence through `HttpSessionSecurityContextRepository`.
-- CSRF protection.
-- Role-based authorization for protected endpoints.
-- Secure session cookies configured with `Secure`, `HttpOnly`, and `SameSite=Lax`.
-- HTTPS/TLS support for local development.
-
-### URL Shortener
-
-- Create shortened URLs through `POST /url/shorten`.
-- Generate unique short codes.
-- Store URL mappings in MySQL.
-- Associate each URL mapping with its owner.
-- Handle duplicate short-code collisions.
-- Return a response DTO containing the original URL and generated short link.
-- Redirect visitors to the original URL using HTTP `302 Found`.
-- Public redirect endpoint: `GET /r/{urlCode}`.
-- Configurable short-link base URL through `app.base-url`.
-
-### Docker & Containerization
-
-- Multi-stage Dockerfile using Maven and Eclipse Temurin.
-- Separate application and MySQL containers.
-- Docker Compose orchestration.
-- Dedicated Docker network for application-to-database communication.
-- Persistent MySQL storage through a named Docker volume.
-- Database initialization through `DB.sql`.
-- Environment-based database credentials and keystore password.
-- HTTPS keystore mounted into the application container.
-- `.dockerignore` and `.gitignore` configurations to exclude build artifacts and sensitive files.
-
-### Current Endpoint Overview
-
-| Endpoint | Access | Purpose |
-|---|---|---|
-| `POST /user/register` | Public | Register an account |
-| `POST /user/login` | Public | Authenticate a user |
-| `GET /csrf` | Public | Retrieve CSRF token |
-| `GET /user/profile` | Authenticated | Retrieve user profile |
-| `POST /url/shorten` | `NORMALUSER` | Create a short URL |
-| `GET /r/{urlCode}` | Public | Redirect to original URL |
-
-**Note:** CSRF protection is enabled, including for public POST requests. Clients must obtain and submit a valid CSRF token.
-
-This table reflects the currently implemented endpoints. Additional endpoints will be documented as development progresses.
+Email verification and MFA are currently under development.
 
 ## Technology Stack
 
 | Technology | Purpose |
 |---|---|
-| Java 23 | Backend programming language |
+| Java 23 | Backend |
 | Spring Boot 4 | Application framework |
 | Spring Security 7 | Authentication and authorization |
-| Spring Data JPA | Database persistence |
-| Hibernate | ORM implementation |
-| MySQL 8 | Relational database |
-| Maven | Build and dependency management |
-| Docker | Application containerization |
-| Docker Compose | Multi-container orchestration |
+| Spring Data JPA / Hibernate | Database persistence |
+| MySQL 8 | Database |
+| Maven | Build and dependencies |
+| Docker / Compose | Containerization |
 | Postman | API testing |
-| TLS / HTTPS | Encrypted application communication |
-| JavaScript (planned) | Browser-side API integration and user interfaces |
+| JavaScript | Planned frontend integration |
 
 ## Getting Started
 
-### Prerequisites
-
-Install the following:
+### Requirements
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [Git](https://git-scm.com/)
-- [Postman](https://www.postman.com/) (optional, for API testing)
+- [Postman](https://www.postman.com/) (optional)
 
-You do not need to install Java, Maven, or MySQL separately to run the Dockerized application.
+Java, Maven, and MySQL do not need to be installed separately to run the Dockerized application.
 
 ### 1. Clone the repository
 
@@ -111,11 +45,7 @@ cd LinkFlow
 
 ### 2. Configure environment variables
 
-Create a `.env` file in the project root, alongside `compose.yaml` and `Dockerfile`.
-
-If the repository contains an `.env.example` file, copy it and use it as your starting point.
-
-For example:
+Create a `.env` file in the project root, alongside `compose.yaml` and `Dockerfile`:
 
 ```dotenv
 DB_USERNAME=appuser
@@ -124,30 +54,19 @@ DB_ROOT_PASSWORD=change_me
 KEYSTORE_PASSWORD=change_me
 ```
 
-Replace the example values with your own credentials.
+Replace the example values with your own credentials. Never commit `.env` or real credentials to Git.
 
-These variables are used by Docker Compose:
+### 3. Create the HTTPS certificate
 
-- `DB_USERNAME`: MySQL application account.
-- `DB_PASSWORD`: Password for the application account.
-- `DB_ROOT_PASSWORD`: MySQL root account password.
-- `KEYSTORE_PASSWORD`: Password protecting the HTTPS keystore.
-
-**Important:** Never commit `.env` or actual credentials to GitHub. The repository should contain an `.env.example` file with placeholder values instead.
-
-### 3. Generate a local HTTPS keystore
-
-The application uses HTTPS on port `8443`.
-
-Create the `certs` directory:
+Create a `certs` directory:
 
 ```bash
 mkdir certs
 ```
 
-Generate a local development certificate using Java's `keytool`:
+Generate a local development keystore using Java's `keytool`:
 
-```bash
+```cmd
 keytool -genkeypair ^
   -alias localhost ^
   -keyalg RSA ^
@@ -159,58 +78,57 @@ keytool -genkeypair ^
   -ext "SAN=dns:localhost,ip:127.0.0.1"
 ```
 
-This command uses Windows Command Prompt (`cmd`) line-continuation syntax. In PowerShell or another terminal, adjust the line continuations accordingly.
+Use the same password configured in `KEYSTORE_PASSWORD`.
 
-Enter the same password configured in `KEYSTORE_PASSWORD` when prompted.
+This creates a self-signed certificate. Browsers and API clients may warn that it is not trusted; this is expected for local development.
 
-This creates a self-signed certificate for local development.
+### 4. Start LinkFlow
 
-**Note:** Browsers and API clients may warn that the certificate is not trusted. This is expected for a self-signed development certificate. Production deployments should use a certificate issued by a trusted certificate authority.
-
-### 4. Start the application
-
-Make sure Docker Desktop is running.
-
-From the project root, execute:
+Make sure Docker Desktop is running, then execute:
 
 ```bash
 docker compose up --build
 ```
 
-Docker Compose will:
-
-1. Build the Spring Boot application using the multi-stage Dockerfile.
-2. Download the MySQL image if it is not already available locally.
-3. Create the MySQL container and application container.
-4. Create the Docker network.
-5. Initialize the `Ldata` database.
-6. Execute `DB.sql` when MySQL initializes a fresh data directory.
-7. Start the Spring Boot application.
-
-The application should become available at:
+The application will be available at:
 
 ```text
 https://localhost:8443
 ```
 
-### 5. Verify the application
+Docker Compose builds the application, starts MySQL, initializes a fresh database, and starts Spring Boot.
 
-Use Postman or another API client to test the endpoints.
+**Important:** `DB.sql` is executed when MySQL initializes an empty data directory. Existing database volumes are preserved between restarts.
 
-Start by retrieving a CSRF token:
+## API Usage
 
-```http
-GET https://localhost:8443/csrf
+All examples use:
+
+```text
+https://localhost:8443
 ```
 
-Use the returned token in the `X-CSRF-TOKEN` header for POST requests. Keep the session cookie associated with the request sequence.
-
-Then test the following:
-
-**Register an account**
+CSRF protection is enabled, including for public POST requests. First retrieve a CSRF token:
 
 ```http
-POST https://localhost:8443/user/register
+GET /csrf
+```
+
+Keep the session cookie and send the returned token in the `X-CSRF-TOKEN` header for POST requests.
+
+| Method | Endpoint | Access | Purpose |
+|---|---|---|---|
+| POST | `/user/register` | Public | Register an account |
+| POST | `/user/login` | Public | Log in |
+| GET | `/csrf` | Public | Retrieve CSRF token |
+| GET | `/user/profile` | Authenticated | View profile |
+| POST | `/url/shorten` | NORMALUSER | Create a short link |
+| GET | `/r/{urlCode}` | Public | Redirect to original URL |
+
+### Register
+
+```http
+POST /user/register
 ```
 
 Example JSON body:
@@ -218,30 +136,31 @@ Example JSON body:
 ```json
 {
   "username": "exampleuser",
-  "password": "yourpassword"
+  "password": "yourpassword",
+  "reenteredPassword": "yourpassword"
 }
 ```
 
-**Log in**
+### Log in
 
 ```http
-POST https://localhost:8443/user/login
+POST /user/login
 ```
 
-Use the same account credentials. Retain the session cookie returned by the server.
+Submit the account credentials and retain the returned session cookie.
 
-**Retrieve your profile**
+### View profile
 
 ```http
-GET https://localhost:8443/user/profile
+GET /user/profile
 ```
 
-This endpoint requires an authenticated session.
+Requires an authenticated session.
 
-**Create a shortened URL**
+### Create a short link
 
 ```http
-POST https://localhost:8443/url/shorten
+POST /url/shorten
 ```
 
 Example JSON body:
@@ -252,32 +171,30 @@ Example JSON body:
 }
 ```
 
-This endpoint requires an authenticated user with the `NORMALUSER` role.
+Requires an authenticated user with the `NORMALUSER` role.
 
-**Follow a shortened URL**
+### Follow a short link
 
 ```http
-GET https://localhost:8443/r/{urlCode}
+GET /r/{urlCode}
 ```
 
-The server redirects the visitor to the original URL.
+Redirects the visitor to the original URL.
 
-### 6. Managing Docker
-
-Useful commands for working with the application:
+## Useful Docker Commands
 
 | Command | Purpose |
 |---|---|
-| `docker compose up` | Start the containers |
-| `docker compose up --build` | Build and start the application |
-| `docker compose down` | Stop and remove containers and network |
-| `docker compose stop` | Stop containers without removing them |
+| `docker compose up` | Start containers |
+| `docker compose up --build` | Build and start |
+| `docker compose down` | Stop and remove containers |
+| `docker compose stop` | Stop containers |
 | `docker compose start` | Restart stopped containers |
 | `docker compose logs app` | View application logs |
-| `docker compose logs database` | View MySQL logs |
-| `docker compose ps` | View container status |
+| `docker compose logs database` | View database logs |
+| `docker compose ps` | Check container status |
 
-**Database persistence:** MySQL data is stored in a named Docker volume. Running `docker compose down` does not delete this data.
+MySQL data is stored in a named Docker volume. `docker compose down` preserves it.
 
 To completely reset the development database:
 
@@ -285,145 +202,41 @@ To completely reset the development database:
 docker compose down -v
 ```
 
-This deletes the named database volume and all data stored in it. On the next startup, MySQL initializes a fresh database and executes `DB.sql` again.
+**Warning:** This deletes the database volume and all stored data. Use it only when you intend to reset the database.
 
-**Warning:** Only use this command when you are comfortable losing the existing database data.
+## Project Architecture
 
-## Configuration
-
-The application uses environment variables for sensitive configuration.
-
-Relevant application properties include:
-
-```properties
-spring.datasource.url=jdbc:mysql://database:3306/Ldata
-spring.datasource.username=${DB_USERNAME}
-spring.datasource.password=${DB_PASSWORD}
-
-app.base-url=https://localhost:8443/r/
-
-server.port=8443
-server.ssl.enabled=true
-server.ssl.key-store=file:/app/certs/localhost.p12
-server.ssl.key-store-type=PKCS12
-server.ssl.key-store-password=${KEYSTORE_PASSWORD}
-server.ssl.key-alias=localhost
-
-server.servlet.session.cookie.same-site=lax
-```
-
-The database hostname `database` refers to the MySQL service name inside the Docker Compose network. It is not `localhost` from the application's container.
-
-The `.env` file is read by Docker Compose for variable substitution. Compose then passes the required variables into the application container.
-
-## Architecture
-
-The project currently follows a layered backend structure:
+LinkFlow follows a layered architecture:
 
 - **Controller:** Handles HTTP requests and responses.
-- **Service:** Contains application and business logic.
+- **Service:** Contains business logic.
 - **Repository:** Handles database operations.
-- **Entity:** Represents persisted database data.
-- **DTO:** Defines request and response data structures.
-- **Security:** Handles authentication, authorization, and session management.
-- **Exception:** Handles application-specific errors.
-- **Util / Validation:** Contains reusable utilities and input validation.
+- **Entity:** Represents persisted database records.
+- **DTO:** Defines API request and response structures.
+- **Security:** Handles authentication and authorization.
+- **Exception:** Centralizes application error handling.
 
-The intended direction is a **modular monolith**: one deployable application organized into clearly separated functional areas, rather than prematurely splitting the system into microservices.
+The intended architecture is a **modular monolith**: one deployable application organized into separate functional areas.
 
-## Planned Features
+## Roadmap
 
-The following features are part of the long-term roadmap and are not all implemented yet.
+Planned development includes:
 
-### User Portal
+- Email verification and multi-factor authentication.
+- Link management, campaigns, and click analytics.
+- User, employee/support, and administrator portals.
+- Developer APIs, API keys, and rate limiting.
+- Asynchronous analytics processing.
+- JavaScript frontend integration.
+- Automated testing, monitoring, and cloud deployment.
 
-- URL management dashboard.
-- Custom short codes.
-- URL expiration and deactivation.
-- Click tracking and analytics.
-- Campaign creation and link organization.
-- QR code generation.
-- Password reset and account recovery.
-- Multi-factor authentication.
-- Account settings.
+## Development Approach
 
-### Employee / Support Portal
+The project prioritizes backend functionality, security, correctness, maintainability, and testing. New technologies will be introduced when they solve a practical engineering problem rather than simply to expand the technology stack.
 
-- Employee account management.
-- Support ticket creation and assignment.
-- Ticket responses and history.
-- User assistance workflows.
-- Reported-link review and abuse investigation.
-
-### Admin Portal
-
-- User and employee management.
-- Role and permission management.
-- Account suspension and recovery oversight.
-- Audit logs.
-- Platform activity and abuse monitoring.
-- Review of reported or suspicious links.
-
-### Developer Platform
-
-- API-based link creation and management.
-- API key creation, revocation, and permissions.
-- Usage tracking and rate limiting.
-- Analytics endpoints for application integrations.
-- Webhooks for selected link events.
-
-### Analytics & Background Processing
-
-- Click-event collection.
-- Asynchronous click-event processing.
-- Background analytics aggregation.
-- Link and campaign performance statistics.
-- Reporting and data export.
-
-### Frontend Integration
-
-- JavaScript-based browser interfaces integrated with Spring Boot REST APIs.
-- Incremental frontend development alongside backend features.
-- API requests using `fetch()`.
-- JSON response handling and form validation.
-- Session-cookie and CSRF-token integration.
-
-### Security & Reliability
-
-- Centralized exception handling.
-- Automated unit and integration testing.
-- Rate limiting.
-- Secure account recovery and MFA.
-- Production HTTPS/TLS configuration.
-- Improved logging and monitoring.
-- URL abuse prevention and suspicious-link reporting.
-
-### Scalability & Deployment
-
-- Redis for caching and shared session storage when justified.
-- Multiple Spring Boot instances.
-- Load balancing with Nginx or an equivalent solution.
-- CI/CD pipeline.
-- Cloud deployment, custom domain, and HTTPS.
-- Database backup and recovery strategy.
-
-## Development Philosophy
-
-The goal is to build a practical backend system that can eventually support real users and external application integrations.
-
-New technologies will be introduced when they solve actual engineering problems.
-
-For example:
-
-- Redis when shared sessions or caching become necessary.
-- Load balancing when multiple backend instances are deployed.
-- Rate limiting when protecting public endpoints from abuse.
-- Asynchronous processing when background workloads justify it, beginning with click-event processing and analytics.
-
-Backend functionality will remain the primary development focus, while JavaScript interfaces will be introduced incrementally as corresponding APIs become stable.
-
-The project will prioritize correctness, security, maintainability, testing, and measurable performance over simply accumulating technologies.
+JavaScript interfaces will be developed incrementally alongside stable backend APIs.
 
 ---
 
-**Thank you for your interest in LinkFlow! >:)**
+**LinkFlow — Build, Manage, and Understand Your Links.**
+Thank you for your interest in the project! >:)
