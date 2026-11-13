@@ -105,8 +105,8 @@ You do not need to install Java, Maven, or MySQL separately to run the Dockerize
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/HiandBye-1/Support-Portal.git
-cd Support-Portal
+git clone https://github.com/HiandBye-1/LinkFlow.git
+cd LinkFlow
 ```
 
 ### 2. Configure environment variables
