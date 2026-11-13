@@ -38,4 +38,10 @@ public class GlobalExceptionHandler {
         return ex.getMessage();
     }
 
+    @ExceptionHandler(MismatchPasswordException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleMismatchPassword(MismatchPasswordException ex){
+        return ex.getMessage();
+    }
+
 }

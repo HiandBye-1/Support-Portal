@@ -8,6 +8,7 @@ import Jar.entities.NormalUser;
 import Jar.dto.LoginRequest;
 import Jar.dto.UserProfileResponse;
 import Jar.service.AuthenticationService;
+import Jar.dto.RegisterRequest;
 
 @RestController
 public class NormalUserController {
@@ -24,8 +25,8 @@ public class NormalUserController {
 
     @PostMapping("/user/register")//register users
     @ResponseStatus(HttpStatus.CREATED)
-    public String registerUser(@RequestBody NormalUser user){
-        normalUserService.register(user.getUsername(), user.getPassword());
+    public String registerUser(@RequestBody RegisterRequest user){
+        normalUserService.register(user.getUsername(), user.getPassword(), user.getReenteredPassword());
         return "User registered successfully";
     }
 
